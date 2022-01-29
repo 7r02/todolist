@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import "../styles/Todolist.scss";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { TiDeleteOutline } from "react-icons/ti";
+import { TiPencil } from "react-icons/ti";
+import { AiOutlineCheckCircle } from "react-icons/ai";
 
 function Todolist() {
     // 1. 예쁘게 꾸미기
@@ -15,6 +17,9 @@ function Todolist() {
     const [text, setText] = useState("");
     const [todolist, setTodolist] = useState([]);
     const [count, setCount] = useState(0);
+    const [editIndex, setEditIndex] = useState(-1);
+    const [editText, setEditText] = useState("");
+
     const textValue = (input) => {
         if (input.key === "Enter") {
             addTodo();
@@ -33,6 +38,8 @@ function Todolist() {
         setCount(count + 1);
         setTodolist(newTodolist);
         setText("");
+        setEditText("");
+        setEditIndex(-1);
     };
 
     const removeTodo = (index) => {
@@ -45,6 +52,35 @@ function Todolist() {
         }
         setCount(count - 1);
         setTodolist(newTodolist);
+        setEditText("");
+        setEditIndex(-1);
+    };
+
+    const tryEdit = (index) => {
+        setEditIndex(index);
+        setEditText(todolist[index]);
+    };
+
+    const editValue = (input, index) => {
+        if (input.key === "Enter") {
+            editTodo(index);
+            return;
+        }
+        setEditText(input.target.value);
+    };
+
+    const editTodo = (index) => {
+        const newTodolist = [];
+        for (let i = 0; i < todolist.length; i++) {
+            if (i === index) {
+                newTodolist[i] = editText;
+                continue;
+            }
+            newTodolist[i] = todolist[i];
+        }
+        setTodolist(newTodolist);
+        setEditIndex(-1);
+        setEditText("");
     };
 
     return (
@@ -63,9 +99,28 @@ function Todolist() {
             </div>
             <div className="Body">
                 {todolist.map((value, index) => (
-                    <div key={index}>
-                        {value}
-                        <TiDeleteOutline onClick={() => removeTodo(index)} />
+                    <div className="todo " key={index}>
+                        {index === editIndex ? (
+                            <input
+                                className="editInput"
+                                onKeyUp={(input) => editValue(input, index)}
+                                defaultValue={value}
+                            />
+                        ) : (
+                            value
+                        )}
+                        <div className="icons">
+                            {index === editIndex ? (
+                                <AiOutlineCheckCircle
+                                    onClick={() => editTodo(index)}
+                                />
+                            ) : (
+                                <TiPencil onClick={() => tryEdit(index)} />
+                            )}
+                            <TiDeleteOutline
+                                onClick={() => removeTodo(index)}
+                            />
+                        </div>
                     </div>
                 ))}
             </div>
