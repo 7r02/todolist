@@ -38,6 +38,14 @@
             justify-content: space-between;
             align-items: center;
 
+            .todoInner {
+                display: flex;
+                align-items: center;
+                p {
+                    margin: 0;
+                }
+            }
+
             .icons {
                 width: 10%;
                 display: flex;
